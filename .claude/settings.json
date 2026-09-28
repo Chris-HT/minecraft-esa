@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./prune-branches.sh *)",
+      "Bash(./deploy.sh *)",
+      "Bash(./deploy.sh)",
+      "Bash(./rollback.sh *)",
+      "Bash(./rollback.sh)"
+    ]
+  }
+}

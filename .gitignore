@@ -1,0 +1,12 @@
+# Secrets and per-machine values live only on the Mac Mini
+.env
+
+# Server state lives only on the Mac Mini
+data/
+data-*/
+data.broken-*/
+backups/
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,116 @@
+# ESA students' Minecraft server (Java + Bedrock). Deploy with ./deploy.sh from the Windows PC.
+# Secrets and per-install values come from .env (written by deploy.sh).
+# Separate Compose project from the family server (~/docker/minecraft), so
+# nothing done here can stop, recreate or delete the family containers.
+name: minecraft-esa
+
+services:
+  mc:
+    image: itzg/minecraft-server:latest   # ships Java 25, required by 26.2
+    container_name: minecraft-esa
+    restart: unless-stopped
+    stop_grace_period: 1m                  # let the world save on shutdown
+    healthcheck:
+      start_period: 10m                    # first start builds the world; test is inherited
+    ports:
+      - "25566:25565"                      # Java; the family server has 25565
+      - "19132:19132/udp"                  # Bedrock, via Geyser
+    environment:
+      EULA: "TRUE"
+      TYPE: FABRIC
+      VERSION: "26.2"                      # pinned; see README "Upgrading Minecraft"
+      MEMORY: 6G                           # 20 players; 8-9G for 50 (README: Scaling to 50)
+      USE_AIKAR_FLAGS: "true"
+      TZ: Europe/London
+
+      # Server-side mods from Modrinth. Removing an entry deletes the jar.
+      MODRINTH_PROJECTS: |
+        fabric-api
+        lithium
+        ferrite-core
+        krypton
+        spark
+        universal-graves
+        essential-commands
+        fabric-language-kotlin   # required by ledger
+        ledger
+        chunky
+        tabtps
+        styled-chat
+        inventory-sorting        # server-side sorting; vanilla clients double-click an empty slot
+        clumps
+        fallingtree
+        geyser                   # Bedrock players join the same world
+        floodgate                # Bedrock players need no Java account
+        worldedit                # for the ESA build; ops only
+      MODRINTH_DOWNLOAD_DEPENDENCIES: required
+
+      # Access control. Reachable from the internet via the relay, so the
+      # whitelist is mandatory. Java names only in WHITELIST; Bedrock players
+      # are added with 'fwhitelist add' (README: Adding players).
+      ONLINE_MODE: "true"
+      ENABLE_WHITELIST: "true"
+      ENFORCE_WHITELIST: "true"
+      WHITELIST: ${WHITELIST:?set WHITELIST in .env}
+      EXISTING_WHITELIST_FILE: MERGE       # keep names added with 'whitelist add'
+      OPS: ${OPS:?set OPS in .env}
+      EXISTING_OPS_FILE: SYNCHRONIZE       # .env is the only source of ops; in-game /op is undone on restart
+      OP_PERMISSION_LEVEL: 3               # moderators: kick/ban/whitelist/tp, not /stop
+
+      # Gameplay
+      MOTD: "ESA Students' Server (not run by the school)"
+      MAX_PLAYERS: 20
+      VIEW_DISTANCE: 10
+      SIMULATION_DISTANCE: 8
+      DIFFICULTY: normal
+      MODE: survival
+      SPAWN_PROTECTION: 64                 # non-ops cannot change blocks within 64 of spawn; keep the ESA build inside it
+      SEED: ${SEED:?set SEED in .env}      # applies only when the world is first generated
+
+      # rcon for rcon-cli and the backup sidecar. Port is NOT published.
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: ${RCON_PASSWORD:?set RCON_PASSWORD in .env}
+    volumes:
+      - ./data:/data
+
+  backup:
+    image: itzg/mc-backup:latest
+    container_name: minecraft-esa-backup
+    restart: unless-stopped
+    depends_on:
+      mc:
+        condition: service_healthy
+    environment:
+      TZ: Europe/London
+      CRON_SCHEDULE: "15 3 * * *"          # nightly 03:15, after the family backup at 03:00
+      BACKUP_METHOD: tar                   # full .tar.gz each run
+      PRUNE_BACKUPS_DAYS: 14
+      BACKUP_NAME: world
+      EXCLUDES: "*.jar,cache,*.tmp"        # the default also drops logs; keep them so chat history is backed up
+      RCON_HOST: mc
+      RCON_PASSWORD: ${RCON_PASSWORD:?set RCON_PASSWORD in .env}
+    volumes:
+      - ./data:/data:ro
+      - type: bind
+        source: ${BACKUP_DIR:?set BACKUP_DIR in .env}
+        target: /backups
+        bind:
+          create_host_path: false          # fail rather than write backups to the boot disk
+
+  # Minecraft never deletes its own logs. Keep chat logs for 30 days (the
+  # period promised to parents), then delete them. Runs once at start, then daily.
+  log-prune:
+    image: alpine:3
+    container_name: minecraft-esa-log-prune
+    restart: unless-stopped
+    init: true                             # so 'docker compose down' stops it at once
+    command:
+      - sh
+      - -c
+      - |
+        while true; do
+          [ -d /data/logs ] && find /data/logs -name '*.log.gz' -mtime +30 -print -delete
+          sleep 86400
+        done
+    volumes:
+      - ./data:/data
