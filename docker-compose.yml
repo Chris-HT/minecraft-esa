@@ -40,7 +40,7 @@ services:
         inventory-sorting        # server-side sorting; vanilla clients double-click an empty slot
         clumps
         fallingtree
-        geyser                   # Bedrock players join the same world
+        geyser:beta              # Bedrock players join the same world; Geyser only publishes beta builds on Modrinth
         floodgate                # Bedrock players need no Java account
         worldedit                # for the ESA build; ops only
       MODRINTH_DOWNLOAD_DEPENDENCIES: required

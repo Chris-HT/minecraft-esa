@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-09-28. **Nothing is deployed yet.** Only code and docs exist.
+Last updated: 2026-09-29. **Nothing is deployed yet.** Only code and docs exist.
 
 ## What this is
 
@@ -35,8 +35,8 @@ Key decisions:
   - `mc`: Fabric 26.2, the family mods plus Geyser, Floodgate and WorldEdit
   - `backup`: nightly at 03:15, keeps chat logs
   - `log-prune`: deletes chat logs older than 30 days
-- `.env.example`. `SEED` is empty on purpose, and deploy refuses to run until
-  it is set.
+- `.env.example`, with the chosen `SEED` (see "World seed"). Deploy refuses
+  to run if `SEED` is empty.
 - `deploy.sh`, `rollback.sh`, `playtimes.sh`, `prune-branches.sh`: copied from
   the family repo and pointed at `~/docker/minecraft-esa` and the 1Password
   item "Minecraft ESA Server".
@@ -49,21 +49,15 @@ empty `SEED`. The relay's firewall file passes `nft -c`. The schematic reads
 back correctly with an independent NBT library, but has not been pasted in game
 yet. Not tested yet: any of it on the real Mac, relay or DigitalOcean.
 
-## Mod check for 26.2 (2026-09-28)
+## Mod check for 26.2 (2026-09-29)
 
-Modrinth itself could not be reached from the cloud session, so this is from
-web search results, not the Modrinth API:
+From the Modrinth API, Fabric builds for 26.2:
 
 | Mod | Fabric 26.2 build? |
 |---|---|
-| `worldedit` | **Yes.** WorldEdit 7.4.5 (NeoForge/Fabric for MC 26.2), 9 Aug 2026. |
-| `geyser` | **Probably.** Geyser-Fabric supports only the newest Java version, which is 26.2 for now. A report from 23 Sep said there was no 26.3 build yet. |
-| `floodgate` | **Not confirmed.** Modrinth lists 26.2 for Fabric, but the newest build that came up in search (2.2.6-b63, April) was for 26.1 to 26.1.2. |
-
-To settle it, open these on the PC:
-modrinth.com/plugin/geyser/versions?l=fabric&g=26.2 and
-modrinth.com/mod/floodgate/versions?l=fabric&g=26.2. The first start will show
-it too: the image stops with an error if it cannot find a matching build.
+| `worldedit` | **Yes.** 3 builds, newest 7.4.5 (release). |
+| `floodgate` | **Yes.** 2 builds, newest 2.2.6-b67 (release). |
+| `geyser` | **Yes, beta only.** 61 builds, newest 2.11.3-b1247, all marked beta. The image picks release builds unless told otherwise, so `docker-compose.yml` lists it as `geyser:beta`. |
 
 **Risk: Geyser moves on.** Geyser-Fabric follows only the newest Java version.
 Once it moves to 26.3 there will be no new builds for 26.2, and when the Bedrock
@@ -106,22 +100,20 @@ another pick: there are 43 other candidates.
 
 ## Next steps
 
-1. Confirm `geyser` and `floodgate` have Fabric 26.2 builds (links above).
-   WorldEdit is fine. Without Geyser and Floodgate, Bedrock players cannot join.
-2. Check the seed on Chunkbase (see "World seed"). Add your child to `OPS`
+1. Check the seed on Chunkbase (see "World seed"). Add your child to `OPS`
    and `WHITELIST` in `.env.example` (`Senior_Huevo` is already in both).
-3. On the Mac, raise Docker Desktop memory to 18 GB and run `docker pull alpine:3`.
-4. Create the 1Password item "Minecraft ESA Server".
-5. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
+2. On the Mac, raise Docker Desktop memory to 18 GB and run `docker pull alpine:3`.
+3. Create the 1Password item "Minecraft ESA Server".
+4. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
    `auth-type: floodgate` and the `ops.json` levels (README steps 9–10).
-6. Build the world: pre-generate, paste `assets/esa.schem` (inside spawn
+5. Build the world: pre-generate, paste `assets/esa.schem` (inside spawn
    protection, README "Building the world" step 3), spawn platform, rules
    signs, then a template backup.
-7. Merge the relay branch in the family repo, then run
+6. Merge the relay branch in the family repo, then run
    `op run --env-file relay/.env.op -- relay/update-relay.sh` when nobody is
    playing. Players on the relay drop for a few seconds.
-8. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
-9. Pilot with about 5 students for a week, then open to 20.
+7. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
+8. Pilot with about 5 students for a week, then open to 20.
 
 ## Open items
 

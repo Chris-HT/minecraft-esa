@@ -259,6 +259,8 @@ is taken before students join.
 1. Take a manual backup (`backup now`, as above).
 2. Check every mod, **especially Geyser and Floodgate**, has a build for the
    new version. Geyser also has to support the current Bedrock app version.
+   Geyser publishes only beta builds on Modrinth, hence `geyser:beta` in
+   `MODRINTH_PROJECTS`.
 3. Change `VERSION` in `docker-compose.yml`, commit, `./deploy.sh`.
 4. If it fails, revert `VERSION` and redeploy; restore the backup if in doubt.
 
