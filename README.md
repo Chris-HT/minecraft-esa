@@ -113,10 +113,24 @@ To refresh images, in a Terminal on the Mac: `cd ~/docker/minecraft-esa && docke
    ssh mac-mini 'export PATH=/usr/local/bin:$PATH; cd docker/minecraft-esa && docker compose exec -T mc rcon-cli chunky radius 2000'
    ssh mac-mini 'export PATH=/usr/local/bin:$PATH; cd docker/minecraft-esa && docker compose exec -T mc rcon-cli chunky start'
    ```
-3. **The ESA letters.** Convert the logo into a `.schem` (e.g. ObjToSchematic),
-   copy it into `data/config/worldedit/schematics/`, then in game stand at the
-   spot and run `//schem load esa` and `//paste`. Light it with sea lanterns or
-   froglights so it shows at night.
+3. **The ESA letters.** `assets/esa.schem` is ready: the logo
+   (`assets/esa-logo.png`) as upright letters 100 wide, 35 tall and 2 deep, in
+   concrete following the logo's purple-to-orange gradient. See
+   `assets/esa-schem-preview.png`. `deploy.sh` copies it to the Mac. Put it
+   where WorldEdit looks:
+   ```bash
+   ssh mac-mini 'cd docker/minecraft-esa && mkdir -p data/config/worldedit/schematics && cp assets/esa.schem data/config/worldedit/schematics/'
+   ```
+   In game, stand where the **bottom centre of the front face** should be and
+   run `//schem load esa`, then `//paste -a` (`-a` leaves the existing ground
+   alone instead of filling the gaps with air). The letters read correctly
+   from the **south** (looking north), so put the platform south of them. To
+   face another way, run `//rotate 90` (or 180, 270) between load and paste.
+   `//undo` takes it back. Light it with sea lanterns or froglights so it
+   shows at night.
+   To change the size or depth, run
+   `python3 tools/logo_to_schem.py --width 120 --depth 3` (needs
+   `pip install pillow`) and commit the new files.
    **Keep all of it inside spawn protection.** `SPAWN_PROTECTION: 64` covers a
    square 64 blocks each way from spawn. For example, letters 100 wide centred
    25 blocks in front of the platform span 50 blocks each side and fit. Letters

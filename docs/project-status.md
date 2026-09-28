@@ -40,23 +40,50 @@ Key decisions:
 - `deploy.sh`, `rollback.sh`, `playtimes.sh`, `prune-branches.sh`: copied from
   the family repo and pointed at `~/docker/minecraft-esa` and the 1Password
   item "Minecraft ESA Server".
+- `assets/esa-logo.png`: the ESA logo. `assets/esa.schem`: the logo as a
+  WorldEdit schematic (100 x 35 x 2, concrete), made by
+  `tools/logo_to_schem.py`. Preview: `assets/esa-schem-preview.png`.
 
 Checked: `docker compose config` passes with a dummy `.env` and fails with an
-empty `SEED`. The relay's firewall file passes `nft -c`. Not tested yet: any of
-it on the real Mac, relay or DigitalOcean.
+empty `SEED`. The relay's firewall file passes `nft -c`. The schematic reads
+back correctly with an independent NBT library, but has not been pasted in game
+yet. Not tested yet: any of it on the real Mac, relay or DigitalOcean.
+
+## Mod check for 26.2 (2026-09-28)
+
+Modrinth itself could not be reached from the cloud session, so this is from
+web search results, not the Modrinth API:
+
+| Mod | Fabric 26.2 build? |
+|---|---|
+| `worldedit` | **Yes.** WorldEdit 7.4.5 (NeoForge/Fabric for MC 26.2), 9 Aug 2026. |
+| `geyser` | **Probably.** Geyser-Fabric supports only the newest Java version, which is 26.2 for now. A report from 23 Sep said there was no 26.3 build yet. |
+| `floodgate` | **Not confirmed.** Modrinth lists 26.2 for Fabric, but the newest build that came up in search (2.2.6-b63, April) was for 26.1 to 26.1.2. |
+
+To settle it, open these on the PC:
+modrinth.com/plugin/geyser/versions?l=fabric&g=26.2 and
+modrinth.com/mod/floodgate/versions?l=fabric&g=26.2. The first start will show
+it too: the image stops with an error if it cannot find a matching build.
+
+**Risk: Geyser moves on.** Geyser-Fabric follows only the newest Java version.
+Once it moves to 26.3 there will be no new builds for 26.2, and when the Bedrock
+app updates, an old Geyser may stop letting Bedrock players in. Plan to upgrade
+to 26.3 (README "Upgrading Minecraft") soon after Geyser, Floodgate and the
+other mods support it.
 
 ## Next steps
 
-1. Check that `geyser`, `floodgate` and `worldedit` have Fabric 26.2 builds on
-   Modrinth. Without Geyser and Floodgate, Bedrock players cannot join.
+1. Confirm `geyser` and `floodgate` have Fabric 26.2 builds (links above).
+   WorldEdit is fine. Without Geyser and Floodgate, Bedrock players cannot join.
 2. Choose a seed. Set `SEED`, `WHITELIST` and `OPS` (add your child) in
    `.env.example`.
 3. On the Mac, raise Docker Desktop memory to 18 GB and run `docker pull alpine:3`.
 4. Create the 1Password item "Minecraft ESA Server".
 5. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
    `auth-type: floodgate` and the `ops.json` levels (README steps 9–10).
-6. Build the world: pre-generate, the ESA letters (inside spawn protection),
-   spawn platform, rules signs, then a template backup.
+6. Build the world: pre-generate, paste `assets/esa.schem` (inside spawn
+   protection, README "Building the world" step 3), spawn platform, rules
+   signs, then a template backup.
 7. Merge the relay branch in the family repo, then run
    `op run --env-file relay/.env.op -- relay/update-relay.sh` when nobody is
    playing. Players on the relay drop for a few seconds.
@@ -65,7 +92,7 @@ it on the real Mac, relay or DigitalOcean.
 
 ## Open items
 
-- ESA logo file (image or 3D model)
+- ~~ESA logo file~~ Done: `assets/esa-logo.png`, turned into `assets/esa.schem`
 - The school's OK on using the ESA name and logo
 - Your child's Minecraft username for `OPS`
 - The parent note (not drafted)
