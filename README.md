@@ -3,6 +3,7 @@
 Fabric Minecraft **26.2** for students of Elstree Screen Arts, Java and Bedrock
 in the same world, in Docker on the Mac Mini (`chriss-mac-mini`). **Parent-run,
 not a school service.** Design and reasoning: [docs/specs](docs/specs/2026-09-28-esa-server-design.md).
+Where things stand: [docs/project-status.md](docs/project-status.md).
 
 | What | Where |
 |---|---|
