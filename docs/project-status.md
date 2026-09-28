@@ -99,7 +99,9 @@ and cherry groves nearby.
 
 ## Next steps
 
-1. On the Mac, raise Docker Desktop memory to 18 GB and run `docker pull alpine:3`.
+1. On the Mac, raise Docker Desktop memory from 12 GB to 18 GB (Settings >
+   Resources > Memory, Apply & restart). `alpine:3` is done: on 2026-09-29 the
+   Mac's existing `alpine:latest` (3.24.1) was tagged as `alpine:3`, no pull needed.
 2. Create the 1Password item "Minecraft ESA Server".
 3. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
    `auth-type: floodgate` and the `ops.json` levels (README steps 9–10).
