@@ -57,9 +57,9 @@ DNS for `esa.myminecraft.party` sits in the same Cloudflare zone as
    `~/bin/ssh` and `~/bin/rsync-ssh` shims. For a new PC, follow "First-time
    setup" steps 3 and 4 in the `minecraft-server` README.
    Check with `./deploy.sh --dry-run`.
-5. **Pick the seed** and put it in `SEED` in `.env.example` (see "Building the
-   world"). `deploy.sh` and Compose both refuse to start without one, because
-   the world is generated from it on the first start.
+5. **Check the seed.** `SEED` in `.env.example` is already chosen (see
+   "Building the world"). Confirm it on Chunkbase before the first deploy:
+   the world is generated from it on the first start and cannot change after.
 6. **Usernames.** Your Java username in `WHITELIST`, you and your child in
    `OPS`, in `.env.example`. Commit.
 7. **Pull the one new image.** `itzg/minecraft-server` and `itzg/mc-backup` are
@@ -105,8 +105,11 @@ To refresh images, in a Terminal on the Mac: `cd ~/docker/minecraft-esa && docke
 
 ## Building the world
 
-1. **Seed.** Use a seed map (e.g. Chunkbase) to find wide flat plains or meadow
-   near 0,0, ideally with a village in view. Set `SEED` before the first deploy.
+1. **Seed.** `-5228782230889826103`: a flat plains plateau at 0,0 (about
+   Y 92), a village at -176,0, cherry groves 200 blocks away. Details, a map
+   and how to check it: [docs/project-status.md](docs/project-status.md),
+   "World seed". Build the letters and platform at 0,0; the first join lands
+   at about -112,0, so `/tp 0 ~ 0` (or walk east).
 2. **Pre-generate** before anyone joins:
    ```bash
    ssh mac-mini 'export PATH=/usr/local/bin:$PATH; cd docker/minecraft-esa && docker compose exec -T mc rcon-cli chunky spawn'

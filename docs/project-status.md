@@ -71,12 +71,45 @@ app updates, an old Geyser may stop letting Bedrock players in. Plan to upgrade
 to 26.3 (README "Upgrading Minecraft") soon after Geyser, Floodgate and the
 other mods support it.
 
+## World seed
+
+`SEED=-5228782230889826103`, chosen 2026-09-28 by searching 4 million seeds
+with [cubiomes](https://github.com/Cubitect/cubiomes) for a flat plains build
+site at 0,0, a village in view, no pillager outpost near spawn, and lots of
+biomes within walking distance. Of 44 that passed, this had the most variety
+close in.
+
+![Biome map, 3200 x 3200 blocks around 0,0; the white square is spawn protection](seed-map.png)
+
+What should be there (block coordinates, distance from 0,0):
+
+| What | Where |
+|---|---|
+| Build site | 0,0: plains plateau at about Y 92, flat to a block or two over ~250 x 250. Drops to a valley in the south-west, so the letters show from below |
+| Natural first spawn | about -112,0, a short walk west of the site |
+| Nearest village | -176,0 (176), plains, in view of the site; 11 villages within 2000 |
+| Cherry grove | 200 (north-east and west of the site) |
+| Savanna, snowy biomes, mountain peaks | 149, 251, 324 |
+| Ocean (north) | 401, with an ocean monument at -240,-752 and 21 shipwrecks within 2000 |
+| Birch forest, jungle, dark forest | 764, 826, 944 |
+| Mushroom island (in the northern sea), taiga | 1105, 1069 |
+| Woodland mansion | -976,688 (1194) |
+| Desert, badlands (south-east) | 1294, 1360 |
+| Pillager outposts | nearest -1312,224 (1331), well away from spawn |
+
+**Check it before the first deploy.** cubiomes models Minecraft up to 1.21.4,
+not 26.2. Overworld generation has been stable since 1.18, but open
+[Chunkbase's seed map](https://www.chunkbase.com/apps/seed-map), choose Java
+26.2 (or the newest it offers), enter the seed and confirm plains at 0,0 with a
+village near -176,0 and cherry groves nearby. If it looks different, ask for
+another pick: there are 43 other candidates.
+
 ## Next steps
 
 1. Confirm `geyser` and `floodgate` have Fabric 26.2 builds (links above).
    WorldEdit is fine. Without Geyser and Floodgate, Bedrock players cannot join.
-2. Choose a seed. Set `SEED`, `WHITELIST` and `OPS` (add your child) in
-   `.env.example`.
+2. Check the seed on Chunkbase (see "World seed"). Add your child to `OPS`
+   and `WHITELIST` in `.env.example` (`Senior_Huevo` is already in both).
 3. On the Mac, raise Docker Desktop memory to 18 GB and run `docker pull alpine:3`.
 4. Create the 1Password item "Minecraft ESA Server".
 5. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
