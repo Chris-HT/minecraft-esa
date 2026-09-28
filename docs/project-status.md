@@ -91,33 +91,30 @@ What should be there (block coordinates, distance from 0,0):
 | Desert, badlands (south-east) | 1294, 1360 |
 | Pillager outposts | nearest -1312,224 (1331), well away from spawn |
 
-**Check it before the first deploy.** cubiomes models Minecraft up to 1.21.4,
-not 26.2. Overworld generation has been stable since 1.18, but open
+**Checked on Chunkbase for 26.2 on 2026-09-29: it matches.** This was needed
+because cubiomes models Minecraft only up to 1.21.4. To check again, open
 [Chunkbase's seed map](https://www.chunkbase.com/apps/seed-map), choose Java
-26.2 (or the newest it offers), enter the seed and confirm plains at 0,0 with a
-village near -176,0 and cherry groves nearby. If it looks different, ask for
-another pick: there are 43 other candidates.
+26.2, enter the seed and look for plains at 0,0 with a village near -176,0
+and cherry groves nearby.
 
 ## Next steps
 
-1. Check the seed on Chunkbase (see "World seed"). Add your child to `OPS`
-   and `WHITELIST` in `.env.example` (`Senior_Huevo` is already in both).
-2. On the Mac, raise Docker Desktop memory to 18 GB and run `docker pull alpine:3`.
-3. Create the 1Password item "Minecraft ESA Server".
-4. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
+1. On the Mac, raise Docker Desktop memory to 18 GB and run `docker pull alpine:3`.
+2. Create the 1Password item "Minecraft ESA Server".
+3. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
    `auth-type: floodgate` and the `ops.json` levels (README steps 9–10).
-5. Build the world: pre-generate, paste `assets/esa.schem` (inside spawn
+4. Build the world: pre-generate, paste `assets/esa.schem` (inside spawn
    protection, README "Building the world" step 3), spawn platform, rules
    signs, then a template backup.
-6. Merge the relay branch in the family repo, then run
+5. Merge the relay branch in the family repo, then run
    `op run --env-file relay/.env.op -- relay/update-relay.sh` when nobody is
    playing. Players on the relay drop for a few seconds.
-7. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
-8. Pilot with about 5 students for a week, then open to 20.
+6. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
+7. Pilot with about 5 students for a week, then open to 20.
 
 ## Open items
 
 - ~~ESA logo file~~ Done: `assets/esa-logo.png`, turned into `assets/esa.schem`
 - The school's OK on using the ESA name and logo
-- Your child's Minecraft username for `OPS`
+- ~~Your child's Minecraft username~~ Done: `Wheafus`, in `WHITELIST` and `OPS`
 - The parent note (not drafted)
