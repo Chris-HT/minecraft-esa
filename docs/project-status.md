@@ -1,7 +1,8 @@
 # Project status
 
-Last updated: 2026-09-29. **Deployed on the Mac, not yet reachable from outside**
-(relay and DNS not done). The world is being built.
+Last updated: 2026-09-29. **Live at `esa.myminecraft.party`**, Java and Bedrock,
+tested from outside. World built, template backup taken. Only the two
+moderators are whitelisted; next is the student pilot.
 
 ## What this is
 
@@ -118,7 +119,8 @@ and cherry groves nearby.
    Java 25565, ESA Java 25566 and ESA Bedrock 19132/udp all answer.
 4. DNS records added 2026-09-29 and checked: `esa.myminecraft.party` and its
    SRV resolve on public DNS, and Java (via the SRV) and Bedrock answer by name.
-   Still to do: join from a phone on mobile data, Java and Bedrock.
+   Phone test on mobile data passed the same day: Java and Bedrock both reach
+   the server and are refused by the whitelist, as they should be.
 5. Pilot with about 5 students for a week, then open to 20.
 
 ## Open items
