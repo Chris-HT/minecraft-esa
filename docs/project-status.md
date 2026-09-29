@@ -18,7 +18,7 @@ on the Mac Mini next to the family server. Parent-run, not a school service.
 |---|---|---|
 | ESA server (compose, deploy, rollback, docs) | this repo, `main` | **running** on the Mac since 2026-09-29 |
 | Relay forwarding for ESA (25566/tcp, 19132/udp) | `Chris-HT/minecraft-server`, `main` (merged as `5729df1`) | **live** on the relay since 2026-09-29 |
-| DNS (`A esa`, SRV `_minecraft._tcp.esa`) | Cloudflare, by hand | not done |
+| DNS (`A esa`, SRV `_minecraft._tcp.esa`) | Cloudflare, zone `myminecraft.party` | **live** since 2026-09-29, DNS only (grey cloud), TTL 300 |
 | Family server | `Chris-HT/minecraft-server`, `main` | unchanged, still reachable through the relay |
 
 Key decisions:
@@ -116,7 +116,9 @@ and cherry groves nearby.
    `relay/update-relay.sh`. Cloud firewall opened for 25566/tcp and 19132/udp.
    Checked from the PC through the relay's public IP (104.248.173.45): family
    Java 25565, ESA Java 25566 and ESA Bedrock 19132/udp all answer.
-4. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
+4. DNS records added 2026-09-29 and checked: `esa.myminecraft.party` and its
+   SRV resolve on public DNS, and Java (via the SRV) and Bedrock answer by name.
+   Still to do: join from a phone on mobile data, Java and Bedrock.
 5. Pilot with about 5 students for a week, then open to 20.
 
 ## Open items
