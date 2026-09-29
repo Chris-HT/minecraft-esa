@@ -13,8 +13,8 @@ parent's support, checks each sign-up and whitelists them.
   printed under it. Isaac designs the poster; the QR code is supplied as a
   high-resolution PNG.
 - One page, one form. A private admin page for Isaac and Chris.
-- A parent note at `https://join.myminecraft.party/parents` (draft:
-  [../parent-note.md](../parent-note.md)).
+- A parent note at `https://join.myminecraft.party/parents` (text in
+  `signup/src/parents.ts`).
 
 ## Changes to the server design
 
