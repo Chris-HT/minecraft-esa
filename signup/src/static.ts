@@ -29,15 +29,19 @@ nav a[aria-current] { font-weight: 700; text-decoration: none; color: var(--ink)
 table { border-collapse: collapse; width: 100%; background: var(--card); }
 th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 0.95rem; }
 td form { background: none; border: 0; padding: 0; display: flex; gap: 6px; flex-wrap: wrap; }
-td form input { width: 10rem; padding: 6px 8px; }
+td form input[type=text] { width: 10rem; padding: 6px 8px; }
 `;
 
 export const ADMIN_JS = `
 document.addEventListener("click", async (event) => {
   const button = event.target.closest("button.copy");
   if (!button) return;
-  await navigator.clipboard.writeText(button.dataset.copy);
-  button.textContent = "Copied";
+  try {
+    await navigator.clipboard.writeText(button.dataset.copy);
+    button.textContent = "Copied";
+  } catch {
+    button.textContent = "Copy failed";
+  }
   setTimeout(() => { button.textContent = "Copy"; }, 1500);
 });
 `;

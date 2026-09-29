@@ -21,6 +21,9 @@ describe("verifyAccess", () => {
     expect(await verifyAccess(withToken("a.b.c"), { ...base, ACCESS_AUD: "" })).toBeNull();
     expect(await verifyAccess(withToken("a.b.c"), { ...base, ACCESS_TEAM_DOMAIN: "" })).toBeNull();
   });
+  it("refuses, rather than throws, when the team domain is malformed", async () => {
+    expect(await verifyAccess(withToken("a.b.c"), { ...base, ACCESS_TEAM_DOMAIN: "not a url" })).toBeNull();
+  });
   it("refuses a malformed token", async () => {
     expect(await verifyAccess(withToken("not-a-jwt"), base)).toBeNull();
   });

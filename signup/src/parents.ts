@@ -38,7 +38,8 @@ only in the public chat that everyone can see, never in private messages.</p>
     damage can be undone. Kept while the world exists.</li>
   <li><strong>Play time</strong> per player, from Minecraft's own statistics.</li>
   <li><strong>Sign-up details</strong> (Minecraft name, school email, form group):
-    deleted 30 days after your child is added.</li>
+    deleted 30 days after your child is added (Cloudflare can restore deleted
+    data for up to 7 days after that).</li>
 </ul>
 <p>Nothing is shared with anyone else, and nothing is used for advertising.</p>
 

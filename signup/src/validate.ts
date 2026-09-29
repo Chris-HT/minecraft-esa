@@ -50,7 +50,7 @@ export function validateSignup(raw: RawForm): Validation {
   } else if (values.edition === "bedrock" && (name.length > 16 || !BEDROCK_NAME.test(name))) {
     errors.mcName = "A Bedrock name is up to 16 letters or numbers, with single spaces.";
   }
-  if (!ESA_EMAIL.test(values.email!)) {
+  if (values.email!.length > 254 || !ESA_EMAIL.test(values.email!)) {
     errors.email = "Use your school email, ending in @esa.ac.";
   }
   if (values.formGroup!.length < 1 || values.formGroup!.length > 10) {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { SignupRow } from "../src/db";
 import { esc } from "../src/html";
 import { parentsPage } from "../src/parents";
-import { adminPage, formPage, thanksPage, tooManyPage, whitelistCommand } from "../src/pages";
+import { adminPage, errorPage, formPage, thanksPage, tooManyPage, whitelistCommand } from "../src/pages";
 import { staticAsset } from "../src/static";
 
 const row: SignupRow = {
@@ -32,14 +32,22 @@ describe("formPage", () => {
   });
 
   it("re-fills typed values (escaped) but never the password, and shows errors", async () => {
-    const res = formPage({ mcName: `<b>`, email: "x@gmail.com", edition: "bedrock", consent: true }, { email: "Use your school email, ending in @esa.ac." }, 400);
+    const res = formPage({ mcName: `<b>`, email: "x@example.com", edition: "bedrock", consent: true }, { email: "Use your school email, ending in @esa.ac." }, 400);
     expect(res.status).toBe(400);
     const html = await res.text();
     expect(html).toContain('value="&lt;b&gt;"');
-    expect(html).toContain('value="x@gmail.com"');
+    expect(html).toContain('value="x@example.com"');
     expect(html).toMatch(/value="bedrock" checked/);
     expect(html).toContain("Use your school email, ending in @esa.ac.");
     expect(html).not.toMatch(/name="password"[^>]*value=/);
+  });
+
+  it("turns off phone auto-capitalise and correction on the name and email, and caps the email length", async () => {
+    const html = await formPage().text();
+    expect(html).toMatch(/<input id="mc_name"[^>]*autocapitalize="off"[^>]*autocorrect="off"[^>]*spellcheck="false"/);
+    expect(html).toMatch(/<input id="email"[^>]*autocapitalize="off"[^>]*autocorrect="off"[^>]*spellcheck="false"/);
+    expect(html).toMatch(/<input id="email"[^>]*maxlength="254"/);
+    expect(html).toMatch(/<input id="form_group"[^>]*autocapitalize="characters"/);
   });
 
   it("links the tick box to the parent note", async () => {
@@ -55,6 +63,19 @@ describe("thanksPage", () => {
     expect(html).toContain("Steve&lt;");
     expect(html).toContain("esa.myminecraft.party");
     expect(html).toContain("19132");
+  });
+
+  it("says the consoles cannot join", async () => {
+    const html = await thanksPage({ mcName: "Steve", edition: "java", email: "s@esa.ac", formGroup: "10B" }).text();
+    expect(html).toContain("Xbox");
+  });
+});
+
+describe("errorPage", () => {
+  it("is a friendly 503", async () => {
+    const res = errorPage();
+    expect(res.status).toBe(503);
+    expect(await res.text()).toContain("Something went wrong saving your sign-up. Please try again in a few minutes.");
   });
 });
 
@@ -87,6 +108,14 @@ describe("adminPage", () => {
     expect(html).toContain('name="status" value="added"');
     expect(html).toContain('name="status" value="refused"');
     expect(html).toContain("/static/admin.js");
+  });
+
+  it("marks an entry that was changed by signing up again", async () => {
+    const changed = await adminPage([{ ...row, updated_at: "2026-10-02T09:00:00.000Z" }], "new", "chris@example.com").text();
+    expect(changed).toContain("<strong");
+    expect(changed).toContain(">changed</strong>");
+    const same = await adminPage([row], "new", "chris@example.com").text();
+    expect(same).not.toContain(">changed<");
   });
 
   it("says when there is nothing to show", async () => {

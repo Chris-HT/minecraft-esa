@@ -1,7 +1,7 @@
 # Sign-up page — Design
 
 Date: 2026-09-29
-Status: designed, not built.
+Status: built on branch signup-page (Tasks 1–8); not yet deployed.
 
 ## Goal
 
@@ -79,7 +79,8 @@ consoles are not supported.
 
 **Signing up again** with the same email updates that entry (name, edition,
 form group) and sets it back to `new`, so a changed name is seen and
-whitelisted.
+whitelisted. The admin page marks such a row **changed**, so Isaac checks the
+new name with the student in person before whitelisting it.
 
 ## Storage (D1)
 
@@ -116,6 +117,8 @@ nothing else is needed. `new` rows are kept until someone handles them.
   - Bedrock: `/fwhitelist add Name` (Floodgate; Bedrock names must not go
     through the normal whitelist). How Floodgate takes a name with a space is
     checked on the server during the build and the command shown to match.
+- A row whose entry was changed by signing up again shows a **changed** marker
+  beside the name.
 - Buttons: **Added**, and **Refused** with a short reason (e.g. "not an ESA
   student").
 - Isaac sees classmates' school emails and form groups. That is the minimum
@@ -123,9 +126,9 @@ nothing else is needed. `new` rows are kept until someone handles them.
 
 ## Parent note (`/parents`)
 
-Approved 2026-09-29. Drafted in `docs/parent-note.md`; during the build it
-moves into `signup/src/parents.ts` (the page's HTML), which becomes the only
-copy.
+Approved 2026-09-29, plus one sentence on Cloudflare's 7-day restore window
+for deleted data. The text lives in `signup/src/parents.ts` (the page's HTML),
+the only copy.
 
 ## Code
 

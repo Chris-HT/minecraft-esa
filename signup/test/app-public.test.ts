@@ -32,6 +32,11 @@ describe("GET pages", () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toContain('action="/signup"');
   });
+  it("redirects GET /signup to the form", async () => {
+    const res = await get("/signup");
+    expect(res.status).toBe(303);
+    expect(res.headers.get("Location")).toBe(`${ORIGIN}/`);
+  });
   it("serves the parent note", async () => expect((await get("/parents")).status).toBe(200));
   it("serves the stylesheet", async () => expect((await get("/static/style.css")).status).toBe(200));
   it("404s anything else", async () => expect((await get("/nope")).status).toBe(404));
@@ -55,11 +60,11 @@ describe("POST /signup", () => {
   });
 
   it("shows field errors and keeps what was typed", async () => {
-    const res = await post({ ...good, email: "steve@gmail.com" });
+    const res = await post({ ...good, email: "steve@example.com" });
     expect(res.status).toBe(400);
     const html = await res.text();
     expect(html).toContain("ending in @esa.ac");
-    expect(html).toContain('value="steve@gmail.com"');
+    expect(html).toContain('value="steve@example.com"');
     expect(await listSignups(env.DB, "all")).toEqual([]);
   });
 
@@ -90,6 +95,17 @@ describe("POST /signup", () => {
       deps,
     );
     expect(res.status).toBe(400);
+  });
+
+  it("returns a friendly 503 when the database fails", async () => {
+    const brokenDb = { prepare: () => { throw new Error("D1 is down"); } } as unknown as D1Database;
+    const res = await handle(
+      new Request(`${ORIGIN}/signup`, { method: "POST", body: new URLSearchParams(good) }),
+      { ...testEnv, DB: brokenDb },
+      deps,
+    );
+    expect(res.status).toBe(503);
+    expect(await res.text()).toContain("Something went wrong saving your sign-up");
   });
 
   it("returns 400 for a body that is not a form", async () => {

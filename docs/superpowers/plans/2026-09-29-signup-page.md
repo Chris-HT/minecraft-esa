@@ -429,7 +429,7 @@ describe("validateSignup", () => {
   });
 
   it.each([
-    ["other domain", "student@gmail.com"],
+    ["other domain", "student@example.com"],
     ["lookalike domain", "student@esa.ac.evil.com"],
     ["subdomain", "student@mail.esa.ac"],
     ["no local part", "@esa.ac"],
@@ -452,8 +452,8 @@ describe("validateSignup", () => {
   });
 
   it("keeps the typed values when refusing", () => {
-    const r = validateSignup({ ...good, email: "x@gmail.com" });
-    expect(r.values).toEqual({ mcName: "Steve_123", edition: "java", email: "x@gmail.com", formGroup: "10B", consent: true });
+    const r = validateSignup({ ...good, email: "x@example.com" });
+    expect(r.values).toEqual({ mcName: "Steve_123", edition: "java", email: "x@example.com", formGroup: "10B", consent: true });
   });
 });
 
@@ -837,11 +837,11 @@ describe("formPage", () => {
   });
 
   it("re-fills typed values (escaped) but never the password, and shows errors", async () => {
-    const res = formPage({ mcName: `<b>`, email: "x@gmail.com", edition: "bedrock", consent: true }, { email: "Use your school email, ending in @esa.ac." }, 400);
+    const res = formPage({ mcName: `<b>`, email: "x@example.com", edition: "bedrock", consent: true }, { email: "Use your school email, ending in @esa.ac." }, 400);
     expect(res.status).toBe(400);
     const html = await res.text();
     expect(html).toContain('value="&lt;b&gt;"');
-    expect(html).toContain('value="x@gmail.com"');
+    expect(html).toContain('value="x@example.com"');
     expect(html).toMatch(/value="bedrock" checked/);
     expect(html).toContain("Use your school email, ending in @esa.ac.");
     expect(html).not.toMatch(/name="password"[^>]*value=/);
@@ -1327,11 +1327,11 @@ describe("POST /signup", () => {
   });
 
   it("shows field errors and keeps what was typed", async () => {
-    const res = await post({ ...good, email: "steve@gmail.com" });
+    const res = await post({ ...good, email: "steve@example.com" });
     expect(res.status).toBe(400);
     const html = await res.text();
     expect(html).toContain("ending in @esa.ac");
-    expect(html).toContain('value="steve@gmail.com"');
+    expect(html).toContain('value="steve@example.com"');
     expect(await listSignups(env.DB, "all")).toEqual([]);
   });
 
@@ -1826,7 +1826,7 @@ import QRCode from "qrcode";
 const URL_TO_ENCODE = "https://join.myminecraft.party";
 const asset = (name) => fileURLToPath(new URL(`../../assets/${name}`, import.meta.url));
 // High error correction, so it still scans if the poster gets scuffed.
-const options = { errorCorrectionLevel: "H", margin: 2 };
+const options = { errorCorrectionLevel: "H", margin: 4 };
 
 await QRCode.toFile(asset("join-qr.png"), URL_TO_ENCODE, { ...options, width: 1200 });
 await QRCode.toFile(asset("join-qr.svg"), URL_TO_ENCODE, { ...options, type: "svg" });
@@ -1884,7 +1884,11 @@ npx wrangler d1 migrations apply esa-signup --remote
 
 Expected: `0001_signups.sql` applied.
 
-- [ ] **Step 4: Deploy**
+- [ ] **Step 4: Check the zone settings**
+
+Check the zone myminecraft.party in the Cloudflare dashboard: SSL/TLS, Edge Certificates, Always Use HTTPS on; Security, Bots, Bot Fight Mode off (it sets a `__cf_bm` cookie, against "no cookies").
+
+- [ ] **Step 5: Deploy**
 
 ```bash
 npm test && npx wrangler deploy
@@ -1894,7 +1898,7 @@ Expected: deployed, with custom domain `join.myminecraft.party`. Wrangler create
 
 Check: `curl -s -o /dev/null -w "%{http_code}" https://join.myminecraft.party` gives `200` (use GET: the Worker does not answer HEAD); `curl -s -o /dev/null -w "%{http_code}" https://join.myminecraft.party/admin` gives `403`. Also confirm `esa.myminecraft.party` still resolves to the relay IP (104.248.173.45) and the SRV record is unchanged.
 
-- [ ] **Step 5: Chris sets the poster password**
+- [ ] **Step 6: Chris sets the poster password**
 
 Ask Chris for the password he wants on the poster (easy to type on a phone, not guessable from the poster design). He runs:
 
@@ -1906,7 +1910,7 @@ and adds it as a field in the 1Password item "Minecraft ESA Server".
 
 Check: submit the form at `https://join.myminecraft.party` with a wrong password: "That's not the password on the poster."
 
-- [ ] **Step 6: Set up Cloudflare Access for `/admin`**
+- [ ] **Step 7: Set up Cloudflare Access for `/admin`**
 
 With Chris's OK (it changes account settings), either through the Cloudflare dashboard or the Cloudflare API:
 
@@ -1919,7 +1923,7 @@ With Chris's OK (it changes account settings), either through the Cloudflare das
 
 If Zero Trust has never been set up on the account, the dashboard first asks for a team name and the Free plan; choose Free.
 
-- [ ] **Step 7: Put the Access settings in the config and redeploy**
+- [ ] **Step 8: Put the Access settings in the config and redeploy**
 
 In `wrangler.jsonc`, set:
 
@@ -1935,11 +1939,15 @@ npx wrangler deploy
 
 Check: opening `https://join.myminecraft.party/admin` in a browser asks for an email; after the PIN, Chris sees "Sign-ups" and "Signed in as …".
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Regenerate the Worker types**
+
+Run `npm run types` so `worker-configuration.d.ts` matches the new vars. `ACCESS_TEAM_DOMAIN` must have no trailing slash (it must equal the JWT `iss`).
+
+- [ ] **Step 10: Commit**
 
 ```bash
 cd /c/Development/minecraft-esa
-git add signup/wrangler.jsonc
+git add signup/wrangler.jsonc signup/worker-configuration.d.ts
 git commit -m "chore(signup): deploy to join.myminecraft.party with D1 and Access"
 ```
 
@@ -1986,6 +1994,8 @@ code is in `signup/` (a Cloudflare Worker); `deploy.sh` does not touch it.
    press **Refused**.
 3. These are other students' school emails and form groups. Keep them to
    yourself.
+4. If a row says **changed**, that student signed up again with the same
+   email. Check the new name with them in person before whitelisting it.
 
 Records are deleted 30 days after they are marked added or refused. Signing
 up again with the same school email updates the entry and puts it back in New.
@@ -1997,6 +2007,13 @@ up again with the same school email updates the entry and puts it back in New.
 - Who can open `/admin`: Cloudflare Zero Trust → Access → Applications →
   "ESA sign-ups admin" → policy "Admins".
 - New QR code (only if the address changes): `cd signup && npm run qr`.
+- Delete one student's data on request:
+  `cd signup && npx wrangler d1 execute esa-signup --remote --command "DELETE FROM signups WHERE email = 'name@esa.ac'"`,
+  then remove them from the whitelist in game (`/whitelist remove Name` or
+  `/fwhitelist remove Name`).
+- Clear junk sign-ups:
+  `npx wrangler d1 execute esa-signup --remote --command "DELETE FROM signups WHERE status = 'new' AND form_group = 'JUNK'"`
+  (adapt the WHERE clause).
 ```
 
 - [ ] **Step 4: Update `docs/project-status.md`**
@@ -2022,11 +2039,16 @@ In `docs/specs/2026-09-28-esa-server-design.md`, under the `- **Parents:** …` 
   tick a consent box. See [2026-09-29-signup-page-design.md](2026-09-29-signup-page-design.md).
 ```
 
-- [ ] **Step 6: Commit and push**
+- [ ] **Step 6: Commit, merge and push**
 
 ```bash
 cd /c/Development/minecraft-esa
 git add README.md docs/project-status.md docs/specs/2026-09-28-esa-server-design.md signup/src/pages.ts signup/test/pages.test.ts
 git commit -m "docs: sign-up page in the README and status; verified end to end"
+```
+
+Merge `signup-page` into `main` once Chris agrees, then push:
+
+```bash
 git push origin main
 ```

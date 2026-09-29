@@ -1,7 +1,7 @@
 import { listSignups, parseFilter, setStatus, upsertSignup } from "./db";
 import type { AppEnv } from "./env";
 import { parentsPage } from "./parents";
-import { adminPage, formPage, thanksPage, tooManyPage } from "./pages";
+import { adminPage, errorPage, formPage, thanksPage, tooManyPage } from "./pages";
 import { staticAsset } from "./static";
 import { passwordMatches, validateSignup, type RawForm } from "./validate";
 
@@ -23,6 +23,7 @@ export async function handle(request: Request, env: AppEnv, deps: Deps): Promise
     if (asset) return asset;
     if (pathname === "/") return formPage();
     if (pathname === "/parents") return parentsPage();
+    if (pathname === "/signup") return Response.redirect(`${url.origin}/`, 303);
   }
   if (method === "POST" && pathname === "/signup") return signup(request, env, deps);
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return admin(request, env, deps, url);
@@ -61,7 +62,11 @@ async function signup(request: Request, env: AppEnv, deps: Deps): Promise<Respon
     return formPage(result.values, errors, 400);
   }
 
-  await upsertSignup(env.DB, result.signup, deps.now());
+  try {
+    await upsertSignup(env.DB, result.signup, deps.now());
+  } catch {
+    return errorPage();
+  }
   return thanksPage(result.signup);
 }
 
@@ -79,7 +84,12 @@ async function admin(request: Request, env: AppEnv, deps: Deps, url: URL): Promi
   if (request.method === "POST" && url.pathname === "/admin/status") {
     // Browsers send Origin on form posts; anything else did not come from this page.
     if (request.headers.get("Origin") !== url.origin) return forbidden();
-    const form = await request.formData();
+    let form: FormData;
+    try {
+      form = await request.formData();
+    } catch {
+      return new Response("Bad request", { status: 400 });
+    }
     const status = form.get("status");
     if (status !== "added" && status !== "refused") return new Response("Bad request", { status: 400 });
     const target = String(form.get("email") ?? "");

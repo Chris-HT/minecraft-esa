@@ -64,7 +64,7 @@ describe("validateSignup", () => {
   });
 
   it.each([
-    ["other domain", "student@gmail.com"],
+    ["other domain", "student@example.com"],
     ["lookalike domain", "student@esa.ac.evil.com"],
     ["subdomain", "student@mail.esa.ac"],
     ["no local part", "@esa.ac"],
@@ -72,6 +72,14 @@ describe("validateSignup", () => {
   ])("refuses the email: %s", (_label, email) => {
     const r = validateSignup({ ...good, email });
     expect(!r.ok && r.errors.email).toMatch(/@esa\.ac/);
+  });
+
+  it("refuses an email longer than 254 characters and accepts a normal one", () => {
+    const long = "a".repeat(255 - "@esa.ac".length) + "@esa.ac";
+    expect(long).toHaveLength(255);
+    const r = validateSignup({ ...good, email: long });
+    expect(!r.ok && r.errors.email).toMatch(/@esa.ac/);
+    expect(validateSignup({ ...good, email: "steve@esa.ac" }).ok).toBe(true);
   });
 
   it("refuses a blank or long form group", () => {
@@ -87,8 +95,8 @@ describe("validateSignup", () => {
   });
 
   it("keeps the typed values when refusing", () => {
-    const r = validateSignup({ ...good, email: "x@gmail.com" });
-    expect(r.values).toEqual({ mcName: "Steve_123", edition: "java", email: "x@gmail.com", formGroup: "10B", consent: true });
+    const r = validateSignup({ ...good, email: "x@example.com" });
+    expect(r.values).toEqual({ mcName: "Steve_123", edition: "java", email: "x@example.com", formGroup: "10B", consent: true });
   });
 });
 

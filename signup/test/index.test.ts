@@ -12,7 +12,7 @@ describe("worker", () => {
     expect(res.status).toBe(200);
   });
 
-  it("keeps /admin closed while Access is not configured", async () => {
+  it("refuses /admin with a malformed Access token", async () => {
     const res = await worker.fetch(
       new Request("https://join.myminecraft.party/admin", { headers: { "Cf-Access-Jwt-Assertion": "a.b.c" } }),
       appEnv,

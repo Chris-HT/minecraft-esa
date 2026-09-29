@@ -27,15 +27,15 @@ ${WHO_RUNS_IT}
   ${err("edition")}
 
   <label for="mc_name">Minecraft name</label>
-  <input id="mc_name" name="mc_name" type="text" value="${val(values.mcName)}" maxlength="16" autocomplete="off" required>
+  <input id="mc_name" name="mc_name" type="text" value="${val(values.mcName)}" maxlength="16" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required>
   ${err("mcName")}
 
   <label for="email">School email</label>
-  <input id="email" name="email" type="email" value="${val(values.email)}" placeholder="you@esa.ac" required>
+  <input id="email" name="email" type="email" value="${val(values.email)}" maxlength="254" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@esa.ac" required>
   ${err("email")}
 
   <label for="form_group">Form group</label>
-  <input id="form_group" name="form_group" type="text" value="${val(values.formGroup)}" maxlength="10" placeholder="e.g. 10B" required>
+  <input id="form_group" name="form_group" type="text" value="${val(values.formGroup)}" maxlength="10" autocapitalize="characters" placeholder="e.g. 10B" required>
   ${err("formGroup")}
 
   <label class="choice"><input type="checkbox" name="consent" value="yes"${values.consent ? " checked" : ""} required>
@@ -61,6 +61,7 @@ ${WHO_RUNS_IT}
 <ol><li>Multiplayer, then Add Server.</li><li>Server address: <code>esa.myminecraft.party</code></li></ol>
 <h2>Bedrock (phone, tablet, Windows or Chromebook)</h2>
 <ol><li>Play, then Servers, then Add Server.</li><li>Server address: <code>esa.myminecraft.party</code>, port <code>19132</code></li></ol>
+<p class="small">Xbox, PlayStation and Switch can't join.</p>
 <p class="small">Used the wrong name? Fill in the <a href="/">form</a> again with the same school email.</p>
 `,
   );
@@ -71,6 +72,14 @@ export function tooManyPage(): Response {
     "Too many tries",
     `<h1>Too many tries</h1><p>Lots of sign-ups have come from this connection in the last minute. Wait a minute, then <a href="/">try again</a>.</p>`,
     { status: 429 },
+  );
+}
+
+export function errorPage(): Response {
+  return page(
+    "Something went wrong",
+    `<h1>Something went wrong</h1><p>Something went wrong saving your sign-up. Please try again in a few minutes.</p><p><a href="/">Back to the form</a></p>`,
+    { status: 503 },
   );
 }
 
@@ -105,9 +114,12 @@ ${body}
 function adminRow(r: SignupRow, filter: Filter): string {
   const cmd = whitelistCommand(r);
   const hidden = `<input type="hidden" name="email" value="${esc(r.email)}"><input type="hidden" name="show" value="${filter}">`;
+  const changed = r.created_at !== r.updated_at
+    ? ` <strong title="Signed up again with this email: check the new name with the student in person">changed</strong>`
+    : "";
   const status = r.status === "refused" && r.note ? `refused: ${esc(r.note)}` : r.status;
   return `<tr>
-<td>${esc(r.mc_name)}</td>
+<td>${esc(r.mc_name)}${changed}</td>
 <td>${r.edition === "java" ? "Java" : "Bedrock"}</td>
 <td>${esc(r.form_group)}</td>
 <td>${esc(r.email)}</td>

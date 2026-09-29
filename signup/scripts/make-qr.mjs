@@ -6,7 +6,7 @@ import QRCode from "qrcode";
 const URL_TO_ENCODE = "https://join.myminecraft.party";
 const asset = (name) => fileURLToPath(new URL(`../../assets/${name}`, import.meta.url));
 // High error correction, so it still scans if the poster gets scuffed.
-const options = { errorCorrectionLevel: "H", margin: 2 };
+const options = { errorCorrectionLevel: "H", margin: 4 };
 
 await QRCode.toFile(asset("join-qr.png"), URL_TO_ENCODE, { ...options, width: 1200 });
 await QRCode.toFile(asset("join-qr.svg"), URL_TO_ENCODE, { ...options, type: "svg" });

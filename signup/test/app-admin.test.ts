@@ -82,6 +82,15 @@ describe("POST /admin/status", () => {
     expect((await handle(setStatusRequest({ email: "steve@esa.ac", status: "added" }, null), testEnv, admin)).status).toBe(403);
   });
 
+  it("returns 400 for a body that is not a form", async () => {
+    const req = new Request(`${ORIGIN}/admin/status`, {
+      method: "POST",
+      body: "{}",
+      headers: { Origin: ORIGIN, "Content-Type": "application/json" },
+    });
+    expect((await handle(req, testEnv, admin)).status).toBe(400);
+  });
+
   it("refuses an unknown status", async () => {
     expect((await handle(setStatusRequest({ email: "steve@esa.ac", status: "new" }), testEnv, admin)).status).toBe(400);
   });
