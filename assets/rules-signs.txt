@@ -1,0 +1,15 @@
+# Rules signs for the spawn platform (README: Building the world, step 5).
+# Be in creative mode, then paste each line into chat. Each gives one dark oak
+# sign with the text already on it: white, glowing, headings in bold, and
+# already waxed so nobody can edit it. Only an op in creative keeps the text;
+# in survival the sign places blank. To change one, break it and place anew.
+# Checked on the server on 2026-09-29 (placed with setblock, read back).
+# Keep each line under 256 characters, the chat limit.
+
+/give @s dark_oak_sign[block_entity_data={id:"minecraft:sign",is_waxed:1b,front_text:{color:"white",has_glowing_text:1b,messages:["WELCOME TO THE",{text:"ESA STUDENTS'",bold:1b},{text:"SERVER",bold:1b},{text:"Not run by ESA",color:"gray"}]}}]
+
+/give @s dark_oak_sign[block_entity_data={id:"minecraft:sign",is_waxed:1b,front_text:{color:"white",has_glowing_text:1b,messages:[{text:"RULES",bold:1b},"Be kind","No griefing","Have fun!"]}}]
+
+/give @s dark_oak_sign[block_entity_data={id:"minecraft:sign",is_waxed:1b,front_text:{color:"white",has_glowing_text:1b,messages:[{text:"MODERATORS",bold:1b},"Senior_Huevo","Wheafus",""]}}]
+
+/give @s dark_oak_sign[block_entity_data={id:"minecraft:sign",is_waxed:1b,front_text:{color:"white",has_glowing_text:1b,messages:[{text:"PROBLEMS?",bold:1b},"Tell a mod,","or tell a","parent"]}}]

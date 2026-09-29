@@ -1,6 +1,7 @@
 # Project status
 
-Last updated: 2026-09-29. **Nothing is deployed yet.** Only code and docs exist.
+Last updated: 2026-09-29. **Deployed on the Mac, not yet reachable from outside**
+(relay and DNS not done). The world is being built.
 
 ## What this is
 
@@ -15,7 +16,7 @@ on the Mac Mini next to the family server. Parent-run, not a school service.
 
 | Piece | Lives in | State |
 |---|---|---|
-| ESA server (compose, deploy, rollback, docs) | this repo, `main` | written, not deployed |
+| ESA server (compose, deploy, rollback, docs) | this repo, `main` | **running** on the Mac since 2026-09-29 |
 | Relay forwarding for ESA (25566/tcp, 19132/udp) | `Chris-HT/minecraft-server`, branch `claude/tender-hopper-95tqbd` | written, **not merged**, not applied to the live relay |
 | DNS (`A esa`, SRV `_minecraft._tcp.esa`) | Cloudflare, by hand | not done |
 | Family server | `Chris-HT/minecraft-server`, `main` | unchanged |
@@ -37,6 +38,8 @@ Key decisions:
   - `log-prune`: deletes chat logs older than 30 days
 - `.env.example`, with the chosen `SEED` (see "World seed"). Deploy refuses
   to run if `SEED` is empty.
+- `ops.json`: the moderators, at level 3. It replaces an `OPS` list in
+  `.env` because the image writes everyone in a list at level 4.
 - `deploy.sh`, `rollback.sh`, `playtimes.sh`, `prune-branches.sh`: copied from
   the family repo and pointed at `~/docker/minecraft-esa` and the 1Password
   item "Minecraft ESA Server".
@@ -44,10 +47,13 @@ Key decisions:
   WorldEdit schematic (100 x 35 x 2, concrete), made by
   `tools/logo_to_schem.py`. Preview: `assets/esa-schem-preview.png`.
 
-Checked: `docker compose config` passes with a dummy `.env` and fails with an
-empty `SEED`. The relay's firewall file passes `nft -c`. The schematic reads
-back correctly with an independent NBT library, but has not been pasted in game
-yet. Not tested yet: any of it on the real Mac, relay or DigitalOcean.
+Checked on the Mac (2026-09-29): all three containers up, `mc` healthy; the
+seed is right (`rcon-cli seed`); all mods load; Geyser listens on 19132/udp;
+whitelist enforced; `data/ops.json` at level 3. Geyser's first start wrote
+`auth-type: online`, changed by hand to `floodgate` in
+`data/config/Geyser-Fabric/config.yml` (a deploy does not overwrite it).
+The relay's firewall file passes `nft -c`. Not tested yet: pasting the
+schematic in game, the relay, DNS, and joining from outside.
 
 ## Mod check for 26.2 (2026-09-29)
 
@@ -99,24 +105,22 @@ and cherry groves nearby.
 
 ## Next steps
 
-1. On the Mac, raise Docker Desktop memory from 12 GB to 18 GB (Settings >
-   Resources > Memory, Apply & restart). `alpine:3` is done: on 2026-09-29 the
-   Mac's existing `alpine:latest` (3.24.1) was tagged as `alpine:3`, no pull needed.
-2. Create the 1Password item "Minecraft ESA Server".
-3. Run `./deploy.sh --dry-run`, then `./deploy.sh`. Check
-   `auth-type: floodgate` and the `ops.json` levels (README steps 9–10).
-4. Build the world: pre-generate, paste `assets/esa.schem` (inside spawn
-   protection, README "Building the world" step 3), spawn platform, rules
-   signs, then a template backup.
-5. Merge the relay branch in the family repo, then run
+1. ~~Docker memory to 18 GB, 1Password item, deploy, Geyser `auth-type`,
+   ops levels~~ Done 2026-09-29.
+2. Build the world: pre-generation was started on 2026-09-29 (`chunky`, radius
+   2000); `esa.schem` is in WorldEdit's schematics folder. Still to do in game:
+   paste it (inside spawn protection, README "Building the world" step 3),
+   spawn platform, rules signs (`/give` commands ready in
+   `assets/rules-signs.txt`), then a template backup.
+3. Merge the relay branch in the family repo, then run
    `op run --env-file relay/.env.op -- relay/update-relay.sh` when nobody is
    playing. Players on the relay drop for a few seconds.
-6. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
-7. Pilot with about 5 students for a week, then open to 20.
+4. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
+5. Pilot with about 5 students for a week, then open to 20.
 
 ## Open items
 
 - ~~ESA logo file~~ Done: `assets/esa-logo.png`, turned into `assets/esa.schem`
 - The school's OK on using the ESA name and logo
-- ~~Your child's Minecraft username~~ Done: `Wheafus`, in `WHITELIST` and `OPS`
+- ~~Your child's Minecraft username~~ Done: `Wheafus`, in `WHITELIST` and `ops.json`
 - The parent note (not drafted)

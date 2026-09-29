@@ -60,8 +60,8 @@ DNS for `esa.myminecraft.party` sits in the same Cloudflare zone as
 5. **Check the seed.** `SEED` in `.env.example` is already chosen (see
    "Building the world"). Confirm it on Chunkbase before the first deploy:
    the world is generated from it on the first start and cannot change after.
-6. **Usernames.** Your Java username in `WHITELIST`, you and your child in
-   `OPS`, in `.env.example`. Commit.
+6. **Usernames.** Your Java username in `WHITELIST` in `.env.example`, you and
+   your child in `ops.json`. Commit.
 7. **Pull the one new image.** `itzg/minecraft-server` and `itzg/mc-backup` are
    already on the Mac, but `alpine` (for `log-prune`) is not, and pulls do not
    work over ssh (see the family README, "Image pulls need a Terminal on the
@@ -75,8 +75,8 @@ DNS for `esa.myminecraft.party` sits in the same Cloudflare zone as
 9. **Geyser auth.** Open `data/config/Geyser-Fabric/config.yml` on the Mac and
    check `auth-type: floodgate` (Geyser usually sets it when Floodgate is
    present). Change it if not, then restart `mc`.
-10. **Ops levels.** Check `data/ops.json`: moderators should be `"level": 3`.
-    You keep full (level 4) control through `rcon-cli`.
+10. **Ops levels.** Check `data/ops.json` matches `ops.json`: moderators at
+    `"level": 3`. You keep full (level 4) control through `rcon-cli`.
 11. **Relay.** In the `minecraft-server` repo:
     `op run --env-file relay/.env.op -- relay/update-relay.sh`. It opens the
     cloud firewall ports and pushes the forwarding rules to the live relay.
@@ -109,7 +109,9 @@ To refresh images, in a Terminal on the Mac: `cd ~/docker/minecraft-esa && docke
    Y 92), a village at -176,0, cherry groves 200 blocks away. Details, a map
    and how to check it: [docs/project-status.md](docs/project-status.md),
    "World seed". Build the letters and platform at 0,0; the first join lands
-   at about -112,0, so `/tp 0 ~ 0` (or walk east).
+   at about -112,0, so `/tp 0 94 0` (or walk east). The grass at 0,0 is at
+   Y 93; `/tp 0 ~ 0` keeps your current height and can bury you in the hill.
+   Build in `/gamemode creative` so you cannot suffocate or fall.
 2. **Pre-generate** before anyone joins:
    ```bash
    ssh mac-mini 'export PATH=/usr/local/bin:$PATH; cd docker/minecraft-esa && docker compose exec -T mc rcon-cli chunky spawn'
@@ -143,8 +145,10 @@ To refresh images, in a Terminal on the Mac: `cd ~/docker/minecraft-esa && docke
    `/setworldspawn ~ ~ ~ <facing angle>`, and set the spawn radius game rule
    to 0 so everyone lands on the same spot. The rule was `spawnRadius`, and newer
    versions renamed game rules, so tab-complete `/gamerule` to find its name.
-5. **Rules signs** by the platform: "Be kind · No griefing · Mods: ___ ·
-   Report problems to ___ · Not run by ESA".
+5. **Rules signs** by the platform: welcome ("Not run by ESA"), rules,
+   moderators, and who to tell about problems. In creative, paste the four
+   `/give` commands from `assets/rules-signs.txt` into chat; each gives a
+   ready-written, waxed sign. If the moderators change, edit that file.
 6. **Template backup** once it is finished and **before students join**, so it
    holds no student data:
    ```bash
@@ -170,10 +174,13 @@ Collect usernames and consent **through parents**.
   In game they appear as `.TheirGamertag`. Do not put Bedrock names in
   `WHITELIST`: the image looks names up with Mojang, which does not know them.
   If `fwhitelist` does not answer from rcon, run it in game as an op.
-- **Moderators:** only `OPS` in `.env.example` counts. Anyone opped in game (a
-  level 3 moderator can run `/op`) is removed at the next restart or deploy.
-  Level 3 can kick, ban, whitelist, teleport and change game mode, but not stop
-  the server.
+- **Moderators:** only `ops.json` in the repo counts. Add an entry with their
+  UUID (it is in `data/usercache.json` once they have joined, or look it up on
+  a site such as mcuuid.net) and `"level": 3`, then redeploy. Anyone opped in
+  game (a level 3 moderator can run `/op`) is removed at the next restart or
+  deploy. Level 3 can kick, ban, whitelist, teleport and change game mode, but
+  not stop the server. (`ops.json` is used rather than an `OPS` list because
+  the image gives everyone in a list level 4.)
 
 ## Console commands
 

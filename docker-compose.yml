@@ -53,8 +53,10 @@ services:
       ENFORCE_WHITELIST: "true"
       WHITELIST: ${WHITELIST:?set WHITELIST in .env}
       EXISTING_WHITELIST_FILE: MERGE       # keep names added with 'whitelist add'
-      OPS: ${OPS:?set OPS in .env}
-      EXISTING_OPS_FILE: SYNCHRONIZE       # .env is the only source of ops; in-game /op is undone on restart
+      # Ops come from ops.json in the repo, not an OPS list: the list form
+      # always writes level 4, and moderators must be level 3.
+      OPS_FILE: /extras/ops.json
+      EXISTING_OPS_FILE: SYNCHRONIZE       # ops.json is the only source of ops; in-game /op is undone on restart
       OP_PERMISSION_LEVEL: 3               # moderators: kick/ban/whitelist/tp, not /stop
 
       # Gameplay
@@ -72,6 +74,7 @@ services:
       RCON_PASSWORD: ${RCON_PASSWORD:?set RCON_PASSWORD in .env}
     volumes:
       - ./data:/data
+      - ./ops.json:/extras/ops.json:ro
 
   backup:
     image: itzg/mc-backup:latest
