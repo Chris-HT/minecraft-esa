@@ -107,11 +107,11 @@ and cherry groves nearby.
 
 1. ~~Docker memory to 18 GB, 1Password item, deploy, Geyser `auth-type`,
    ops levels~~ Done 2026-09-29.
-2. Build the world: pre-generation was started on 2026-09-29 (`chunky`, radius
-   2000); `esa.schem` is in WorldEdit's schematics folder. Still to do in game:
-   paste it (inside spawn protection, README "Building the world" step 3),
-   spawn platform, rules signs (`/give` commands ready in
-   `assets/rules-signs.txt`), then a template backup.
+2. ~~Build the world~~ Done 2026-09-29: pre-generated to radius 2000, ESA
+   letters, spawn platform, rules signs (`assets/rules-signs.txt`). Template
+   backup taken before any student joined:
+   `/Volumes/X9/backups/minecraft-esa-template/world-20260929-183757.tar.gz`
+   (439 MB). Restore it to reset for a new term (README "Backups and restore").
 3. Merge the relay branch in the family repo, then run
    `op run --env-file relay/.env.op -- relay/update-relay.sh` when nobody is
    playing. Players on the relay drop for a few seconds.
