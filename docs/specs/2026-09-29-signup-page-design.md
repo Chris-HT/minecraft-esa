@@ -67,9 +67,10 @@ Form fields:
 | Tick box | "My parent or guardian knows I'm joining and is OK with it", with a link to `/parents`. Must be ticked |
 
 All checks run in the Worker; the browser checks are only for convenience.
-Errors are friendly and name the field. A wrong password is limited to 10
-tries per minute per connection (Workers rate-limiting binding, keyed on the
-connecting IP, not stored).
+Errors are friendly and name the field. Submissions are limited to 20 a
+minute per connection (Workers rate-limiting binding, keyed on the connecting
+IP, not stored). Not lower: the school Wi-Fi puts every student behind one
+address, and a class may sign up together.
 
 After a successful sign-up: "Thanks! You'll be added within a few days. Then
 join `esa.myminecraft.party`", with short join steps for Java (Multiplayer →
@@ -122,20 +123,27 @@ nothing else is needed. `new` rows are kept until someone handles them.
 
 ## Parent note (`/parents`)
 
-A static page from [../parent-note.md](../parent-note.md), once Chris approves
-the text.
+Approved 2026-09-29. Drafted in `docs/parent-note.md`; during the build it
+moves into `signup/src/parents.ts` (the page's HTML), which becomes the only
+copy.
 
 ## Code
 
 ```
 signup/
-  wrangler.jsonc     Worker, D1 binding, rate-limit binding, daily cron, route join.myminecraft.party
-  schema.sql         the table above
-  src/index.ts       routing: /, /parents, POST /signup, /admin, admin API, scheduled()
-  src/validate.ts    field rules (pure functions, unit tested)
-  src/pages/         HTML for the form, thank-you, parent note, admin
-  test/              Vitest with @cloudflare/vitest-pool-workers
+  wrangler.jsonc               Worker, D1, rate limit, daily cron, custom domain join.myminecraft.party
+  migrations/0001_signups.sql  the table above
+  src/index.ts                 Worker entry: fetch() and scheduled()
+  src/app.ts                   routing: /, POST /signup, /parents, /admin, POST /admin/status, /static/*
+  src/validate.ts              field rules (pure functions, unit tested)
+  src/db.ts                    D1 queries
+  src/access.ts                Cloudflare Access JWT check
+  src/html.ts, src/pages.ts, src/parents.ts, src/static.ts   HTML, CSS and the admin copy script
+  test/                        Vitest with @cloudflare/vitest-plugin
 ```
+
+CSS and the admin script are served under `/static/`, not `/admin…`, so the
+Access rule for `/admin` never covers them.
 
 - `deploy.sh` excludes `signup/`, so it never goes to the Mac.
 - Deploy: `cd signup && npx wrangler deploy`. The password is set with
@@ -166,6 +174,8 @@ signup/
 
 - The school's OK on putting posters up, asked together with the open question
   on using the ESA name and logo.
-- How parents contact Chris, for the parent note.
-- Isaac's email address for Cloudflare Access.
 - The poster password.
+
+Settled 2026-09-29: parents contact Chris at `me@chris-thompson.uk` (in the
+parent note). Isaac's email is set only in the Cloudflare Access policy, never
+in this repo, which is public.

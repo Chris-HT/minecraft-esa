@@ -47,5 +47,6 @@ multiplayer games" in Microsoft Family Safety before they can play online.
 
 ## Questions, or taking your child off
 
-[How to contact — to be filled in.] Ask and your child will be removed from
-the server and their sign-up details deleted.
+Email Chris Thompson, the parent who hosts the server, at
+[me@chris-thompson.uk](mailto:me@chris-thompson.uk). Ask and your child will
+be removed from the server and their sign-up details deleted.
