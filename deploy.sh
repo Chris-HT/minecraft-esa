@@ -12,7 +12,7 @@ set -euo pipefail
 HOST=mac-mini
 REMOTE_DIR=docker/minecraft-esa                   # relative to the Mac home dir
 OP_RCON='op://Personal/Minecraft ESA Server/password'
-RSYNC_EXCLUDES=(--exclude .git --exclude data/ --exclude 'data.broken-*/' --exclude 'data-*/' --exclude backups/ --exclude .env --exclude docs/ --exclude .claude/ --exclude .superpowers/)
+RSYNC_EXCLUDES=(--exclude .git --exclude data/ --exclude 'data.broken-*/' --exclude 'data-*/' --exclude backups/ --exclude .env --exclude docs/ --exclude .claude/ --exclude .superpowers/ --exclude signup/)
 
 # Git Bash's MSYS rsync hands its remote shell a socketpair that Windows
 # OpenSSH (the only ssh that reaches the 1Password agent) cannot read, so the

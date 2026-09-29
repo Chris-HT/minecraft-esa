@@ -11,3 +11,8 @@ backups/
 .DS_Store
 Thumbs.db
 __pycache__/
+
+# Sign-up Worker
+signup/node_modules/
+signup/.wrangler/
+signup/.dev.vars
