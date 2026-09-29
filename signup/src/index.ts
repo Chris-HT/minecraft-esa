@@ -4,7 +4,7 @@ import { purgeHandled } from "./db";
 import type { AppEnv } from "./env";
 
 export default {
-  fetch(request, env, ctx): Promise<Response> {
+  fetch(request, env): Promise<Response> {
     return handle(request, env, { adminEmail: verifyAccess, now: () => new Date() });
   },
 
