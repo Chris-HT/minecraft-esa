@@ -17,9 +17,9 @@ on the Mac Mini next to the family server. Parent-run, not a school service.
 | Piece | Lives in | State |
 |---|---|---|
 | ESA server (compose, deploy, rollback, docs) | this repo, `main` | **running** on the Mac since 2026-09-29 |
-| Relay forwarding for ESA (25566/tcp, 19132/udp) | `Chris-HT/minecraft-server`, branch `claude/tender-hopper-95tqbd` | written, **not merged**, not applied to the live relay |
+| Relay forwarding for ESA (25566/tcp, 19132/udp) | `Chris-HT/minecraft-server`, `main` (merged as `5729df1`) | **live** on the relay since 2026-09-29 |
 | DNS (`A esa`, SRV `_minecraft._tcp.esa`) | Cloudflare, by hand | not done |
-| Family server | `Chris-HT/minecraft-server`, `main` | unchanged |
+| Family server | `Chris-HT/minecraft-server`, `main` | unchanged, still reachable through the relay |
 
 Key decisions:
 - **Separate repo and Compose project** (`~/docker/minecraft-esa`), so nothing
@@ -112,9 +112,10 @@ and cherry groves nearby.
    backup taken before any student joined:
    `/Volumes/X9/backups/minecraft-esa-template/world-20260929-183757.tar.gz`
    (439 MB). Restore it to reset for a new term (README "Backups and restore").
-3. Merge the relay branch in the family repo, then run
-   `op run --env-file relay/.env.op -- relay/update-relay.sh` when nobody is
-   playing. Players on the relay drop for a few seconds.
+3. ~~Relay~~ Done 2026-09-29: branch merged in the family repo, applied with
+   `relay/update-relay.sh`. Cloud firewall opened for 25566/tcp and 19132/udp.
+   Checked from the PC through the relay's public IP (104.248.173.45): family
+   Java 25565, ESA Java 25566 and ESA Bedrock 19132/udp all answer.
 4. Add the DNS records, then test Java and Bedrock from a phone on mobile data.
 5. Pilot with about 5 students for a week, then open to 20.
 
