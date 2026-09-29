@@ -43,6 +43,7 @@ services:
         geyser:beta              # Bedrock players join the same world; Geyser only publishes beta builds on Modrinth
         floodgate                # Bedrock players need no Java account
         worldedit                # for the ESA build; ops only
+        disable-end              # End portals stop teleporting while the disable_end game rule is true (default false)
       MODRINTH_DOWNLOAD_DEPENDENCIES: required
 
       # Access control. Reachable from the internet via the relay, so the

@@ -20,7 +20,14 @@ chat logs older than 30 days).
 Mods (all server-side): the family server's set (fabric-api, lithium,
 ferrite-core, krypton, spark, universal-graves, essential-commands,
 fabric-language-kotlin, ledger, chunky, tabtps, styled-chat, inventory-sorting,
-clumps, fallingtree) plus geyser, floodgate and worldedit.
+clumps, fallingtree) plus geyser, floodgate, worldedit and disable-end.
+
+**The End is closed.** `disable-end` stops End portals teleporting anyone
+while the game rule is on. It is saved in the world, so it survives restarts
+and deploys. The template backup was taken before it was added, so after
+restoring that, run `/gamerule disable_end true` again. To open the End (for example, for a dragon-fight event), a moderator
+runs `/gamerule disable_end false`, and `/gamerule disable_end true` to close
+it again. Portals still light up either way.
 
 ## How it sits next to the family server
 

@@ -34,7 +34,8 @@ Key decisions:
 ## What is in this repo
 
 - `docker-compose.yml`, which runs three containers:
-  - `mc`: Fabric 26.2, the family mods plus Geyser, Floodgate and WorldEdit
+  - `mc`: Fabric 26.2, the family mods plus Geyser, Floodgate, WorldEdit and
+    Disable End (End closed with `disable_end` = true since 2026-09-29)
   - `backup`: nightly at 03:15, keeps chat logs
   - `log-prune`: deletes chat logs older than 30 days
 - `.env.example`, with the chosen `SEED` (see "World seed"). Deploy refuses
