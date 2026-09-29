@@ -1,7 +1,7 @@
-import { upsertSignup } from "./db";
+import { listSignups, parseFilter, setStatus, upsertSignup } from "./db";
 import type { AppEnv } from "./env";
 import { parentsPage } from "./parents";
-import { formPage, thanksPage, tooManyPage } from "./pages";
+import { adminPage, formPage, thanksPage, tooManyPage } from "./pages";
 import { staticAsset } from "./static";
 import { passwordMatches, validateSignup, type RawForm } from "./validate";
 
@@ -25,6 +25,7 @@ export async function handle(request: Request, env: AppEnv, deps: Deps): Promise
     if (pathname === "/parents") return parentsPage();
   }
   if (method === "POST" && pathname === "/signup") return signup(request, env, deps);
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return admin(request, env, deps, url);
   return notFound();
 }
 
@@ -62,4 +63,31 @@ async function signup(request: Request, env: AppEnv, deps: Deps): Promise<Respon
 
   await upsertSignup(env.DB, result.signup, deps.now());
   return thanksPage(result.signup);
+}
+
+const forbidden = () => new Response("Forbidden", { status: 403 });
+
+async function admin(request: Request, env: AppEnv, deps: Deps, url: URL): Promise<Response> {
+  const email = await deps.adminEmail(request, env);
+  if (!email) return forbidden();
+
+  if (request.method === "GET" && url.pathname === "/admin") {
+    const filter = parseFilter(url.searchParams.get("show"));
+    return adminPage(await listSignups(env.DB, filter), filter, email);
+  }
+
+  if (request.method === "POST" && url.pathname === "/admin/status") {
+    // Browsers send Origin on form posts; anything else did not come from this page.
+    if (request.headers.get("Origin") !== url.origin) return forbidden();
+    const form = await request.formData();
+    const status = form.get("status");
+    if (status !== "added" && status !== "refused") return new Response("Bad request", { status: 400 });
+    const target = String(form.get("email") ?? "");
+    const note = status === "refused" ? String(form.get("note") ?? "").trim().slice(0, 200) || null : null;
+    await setStatus(env.DB, target, status, note, deps.now());
+    const back = parseFilter(String(form.get("show") ?? "new"));
+    return Response.redirect(`${url.origin}/admin?show=${back}`, 303);
+  }
+
+  return notFound();
 }
