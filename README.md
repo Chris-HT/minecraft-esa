@@ -141,6 +141,12 @@ To refresh images, in a Terminal on the Mac: `cd ~/docker/minecraft-esa && docke
    25 blocks in front of the platform span 50 blocks each side and fit. Letters
    90 blocks away would be mostly unprotected. If the build needs more room,
    raise `SPAWN_PROTECTION` (e.g. 96) and redeploy.
+   **Picture walls.** `assets/creative.schem` (chameleon),
+   `assets/craftship.schem` (bee) and `assets/committed.schem` (donkey) are
+   64 x 64 x 1 pixel-art walls, pasted the
+   same way (`//schem load creative`, `//paste -a -s`); previews beside them.
+   Copy them to the schematics folder as for `esa.schem`. To make one from
+   another picture, see `tools/image_to_schem.py`.
 4. **Spawn.** Build a viewing platform facing the letters, stand on it, run
    `/setworldspawn ~ ~ ~ <facing angle>`, and set the spawn radius game rule
    to 0 so everyone lands on the same spot. The rule was `spawnRadius`, and newer
