@@ -10,8 +10,7 @@
     {
       "binding": "DB",
       "database_name": "esa-signup",
-      // Local-only value; Task 9 replaces it with the id from `wrangler d1 create`.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "49887b39-eb4e-4c0e-b15f-f6237212d373",
       "migrations_dir": "migrations"
     }
   ],
@@ -21,8 +20,8 @@
   ],
   // Daily at 03:00 UTC: delete rows handled more than 30 days ago.
   "triggers": { "crons": ["0 3 * * *"] },
-  // Set in Task 9 from the Cloudflare Access application. Empty = /admin refuses everyone.
-  "vars": { "ACCESS_TEAM_DOMAIN": "", "ACCESS_AUD": "" },
+  // From the Cloudflare Access application "ESA sign-ups admin". Empty = /admin refuses everyone.
+  "vars": { "ACCESS_TEAM_DOMAIN": "https://dark-pond-0266.cloudflareaccess.com", "ACCESS_AUD": "445e79153d1536ed0187983d5a0fca48c1379fcff830d21534cbff2eed54df2e" },
   // No request logs: the spec promises no IP addresses are stored.
   "observability": { "enabled": false }
 }
