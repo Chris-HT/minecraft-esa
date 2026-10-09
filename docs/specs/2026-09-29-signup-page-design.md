@@ -1,7 +1,8 @@
 # Sign-up page — Design
 
 Date: 2026-09-29
-Status: built on branch signup-page (Tasks 1–8); not yet deployed.
+Status: live at join.myminecraft.party since 2026-09-30, from branch signup-page
+(not yet merged into main).
 
 ## Goal
 
@@ -147,6 +148,10 @@ signup/
 
 CSS and the admin script are served under `/static/`, not `/admin…`, so the
 Access rule for `/admin` never covers them.
+
+`Referrer-Policy` is `same-origin`, not `no-referrer`: with `no-referrer`
+browsers send `Origin: null` on form posts, and `POST /admin/status` refuses
+any post whose Origin is not the site's own (fixed 2026-10-09).
 
 - `deploy.sh` excludes `signup/`, so it never goes to the Mac.
 - Deploy: `cd signup && npx wrangler deploy`. The password is set with

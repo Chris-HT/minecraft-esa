@@ -218,6 +218,8 @@ A seed decides only the terrain; the build is added to the world afterwards.
   how to reach Chris) and collect usernames and consent **through parents**.
   Include a line on Xbox family settings: child Microsoft accounts may need a
   parent to allow "join multiplayer games".
+  Superseded 2026-09-29 by the sign-up page: students sign up themselves and
+  tick a consent box. See [2026-09-29-signup-page-design.md](2026-09-29-signup-page-design.md).
 - **Chat logs:** kept 30 days on the server (`log-prune`), and in backups for
   up to 14 days after that. Tell parents "about 6 weeks at most". The template
   backup is taken before students join, so it holds none.

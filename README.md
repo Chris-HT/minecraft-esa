@@ -195,6 +195,47 @@ Collect usernames and consent **through parents**.
   not stop the server. (`ops.json` is used rather than an `OPS` list because
   the image gives everyone in a list level 4.)
 
+## Sign-ups (join.myminecraft.party)
+
+Students scan the QR code on the poster (`assets/join-qr.png`) and sign up at
+`https://join.myminecraft.party` with the password printed on the poster. The
+code is in `signup/` (a Cloudflare Worker); `deploy.sh` does not touch it.
+
+**For Isaac: handling sign-ups.**
+
+1. Open `https://join.myminecraft.party/admin` and log in with the code
+   emailed to you.
+2. For each new sign-up, press **Copy**, paste the command into the game chat,
+   then press **Added**. If it is not a real ESA student, write a reason and
+   press **Refused**.
+3. These are other students' school emails and form groups. Keep them to
+   yourself.
+4. If a row says **changed**, that student signed up again with the same
+   email. Check the new name with them in person before whitelisting it.
+
+Records are deleted 30 days after they are marked added or refused. Signing
+up again with the same school email updates the entry and puts it back in New.
+
+**For Chris.**
+
+- Deploy changes: `cd signup && git pull && npm test && npx wrangler deploy`.
+  Pull first: deploying from a copy without the real `database_id` and Access
+  values in `wrangler.jsonc` would break the live site.
+- Change the poster password: `cd signup && npx wrangler secret put SIGNUP_PASSWORD`,
+  update 1Password, and reprint the posters.
+- Who can open `/admin`: Cloudflare Zero Trust → Access → Applications →
+  "ESA sign-ups admin" → policy "Admins".
+- List new sign-ups without the admin page:
+  `cd signup && npx wrangler d1 execute esa-signup --remote --command "SELECT mc_name, edition, form_group, updated_at FROM signups WHERE status = 'new'"`.
+- New QR code (only if the address changes): `cd signup && npm run qr`.
+- Delete one student's data on request:
+  `cd signup && npx wrangler d1 execute esa-signup --remote --command "DELETE FROM signups WHERE email = 'name@esa.ac'"`,
+  then remove them from the whitelist in game (`/whitelist remove Name` or
+  `/fwhitelist remove Name`).
+- Clear junk sign-ups:
+  `npx wrangler d1 execute esa-signup --remote --command "DELETE FROM signups WHERE status = 'new' AND form_group = 'JUNK'"`
+  (adapt the WHERE clause).
+
 ## Console commands
 
 ```bash

@@ -1,8 +1,9 @@
 # Project status
 
-Last updated: 2026-09-29. **Live at `esa.myminecraft.party`**, Java and Bedrock,
-tested from outside. World built, template backup taken. Only the two
-moderators are whitelisted; next is the student pilot.
+Last updated: 2026-10-09. **Live at `esa.myminecraft.party`**, Java and Bedrock,
+tested from outside. World built, template backup taken. The sign-up page at
+`join.myminecraft.party` is live (deployed 2026-09-30) and the first student
+sign-ups were whitelisted on 2026-10-09.
 
 ## What this is
 
@@ -48,6 +49,10 @@ Key decisions:
 - `assets/esa-logo.png`: the ESA logo. `assets/esa.schem`: the logo as a
   WorldEdit schematic (100 x 35 x 2, concrete), made by
   `tools/logo_to_schem.py`. Preview: `assets/esa-schem-preview.png`.
+- `signup/`: the sign-up page at `https://join.myminecraft.party` (Cloudflare
+  Worker, D1, admin page behind Cloudflare Access). Poster QR code:
+  `assets/join-qr.png`. Design: [specs/2026-09-29-signup-page-design.md](specs/2026-09-29-signup-page-design.md).
+  Still on branch `signup-page`, not yet merged into `main`.
 
 Checked on the Mac (2026-09-29): all three containers up, `mc` healthy; the
 seed is right (`rcon-cli seed`); all mods load; Geyser listens on 19132/udp;
@@ -122,11 +127,19 @@ and cherry groves nearby.
    SRV resolve on public DNS, and Java (via the SRV) and Bedrock answer by name.
    Phone test on mobile data passed the same day: Java and Bedrock both reach
    the server and are refused by the whitelist, as they should be.
-5. Pilot with about 5 students for a week, then open to 20.
+5. ~~Sign-up page~~ Deployed 2026-09-30. On 2026-10-09 the admin page's
+   Added and Refused buttons returned Forbidden (fixed and redeployed the
+   same day, `fd5c0c8`).
+6. Put posters up (after the school's OK); pilot with about 5 students for a
+   week, then open to 20.
 
 ## Open items
 
 - ~~ESA logo file~~ Done: `assets/esa-logo.png`, turned into `assets/esa.schem`
 - The school's OK on using the ESA name and logo
 - ~~Your child's Minecraft username~~ Done: `Wheafus`, in `WHITELIST` and `ops.json`
-- The parent note (not drafted)
+- ~~The parent note~~ Done: at join.myminecraft.party/parents
+- The school's OK on putting posters up (ask with the name and logo question)
+- Check how Floodgate takes a Bedrock name with a space (sign-up plan Task 10
+  Step 2) before the first such sign-up
+- Merge `signup-page` into `main`
