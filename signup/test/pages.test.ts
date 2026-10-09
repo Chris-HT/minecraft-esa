@@ -31,6 +31,11 @@ describe("formPage", () => {
     expect(res.headers.get("Set-Cookie")).toBeNull();
   });
 
+  it("keeps the Origin header on same-site form posts", () => {
+    // no-referrer would make browsers send "Origin: null" and /admin/status would refuse it.
+    expect(formPage().headers.get("Referrer-Policy")).toBe("same-origin");
+  });
+
   it("re-fills typed values (escaped) but never the password, and shows errors", async () => {
     const res = formPage({ mcName: `<b>`, email: "x@example.com", edition: "bedrock", consent: true }, { email: "Use your school email, ending in @esa.ac." }, 400);
     expect(res.status).toBe(400);

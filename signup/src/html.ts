@@ -7,7 +7,9 @@ export function esc(s: string): string {
 const SECURITY_HEADERS = {
   "Content-Security-Policy":
     "default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
-  "Referrer-Policy": "no-referrer",
+  // Not no-referrer: that makes browsers send "Origin: null" on form posts,
+  // which fails the Origin check on /admin/status.
+  "Referrer-Policy": "same-origin",
   "X-Content-Type-Options": "nosniff",
   "Cache-Control": "no-store",
 };
